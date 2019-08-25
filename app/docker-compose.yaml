@@ -1,0 +1,45 @@
+version: '3.5'
+services:
+  family-cost:
+   container_name: angularcontainer
+   build: ./family-cost-web
+   volumes:
+    - './family-cost-web:/usr/src/app' 
+   ports:
+    - '4200:4200' # Port mapping
+   command: >
+     bash -c "npm install && npm start"
+   networks: 
+    - family-network
+
+  nginx:
+    container_name: nginx-fc
+    restart: always
+    build: ./nginx
+    ports:
+    - 80:80
+    extra_hosts:
+    - family-cost.nl:${HOST_IP}
+    networks: 
+    - family-network 
+    environment:
+      SECRET_KEY: "asdlaksjdlkajslkdjlasd-dkjahkfa-asdkjalkjsda"
+  
+  fc-database:
+    container_name: database-fc
+    env_file: docker/mysql/database.conf
+    build: 
+      context: docker/mysql/
+    ports:
+      - "3306:3306"
+    volumes:
+      - fc_db:/var/lib/mysql:rw
+    networks: 
+    - family-network 
+
+volumes:
+  fc_db:
+  nginx:  
+
+networks: 
+  family-network:
