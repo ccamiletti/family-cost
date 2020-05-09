@@ -7,11 +7,11 @@ services:
     - './family-cost-web:/usr/src/app' 
    ports:
     - '4200:4200' # Port mapping
-   command: >
-     bash -c "npm install && npm start"
+   #command: >
+     #bash -c "npm install && npm run build && npm start"
    networks: 
     - family-network
-
+  
   nginx:
     container_name: nginx-fc
     restart: always
@@ -20,10 +20,15 @@ services:
     - 80:80
     extra_hosts:
     - family-cost.nl:${HOST_IP}
+    links:  
+      - family-cost
     networks: 
     - family-network 
     environment:
       SECRET_KEY: "asdlaksjdlkajslkdjlasd-dkjahkfa-asdkjalkjsda"
+    volumes:
+      - ./family-cost-web/dist:/usr/share/nginx/html
+  
   
   fc-database:
     container_name: database-fc
